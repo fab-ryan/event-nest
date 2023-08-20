@@ -2,9 +2,13 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import config from './config/configuration';
 import * as compression from 'compression';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { SwaggerConfig, Logger } from './utils';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: Logger.logger,
+  });
   app.use(
     compression({
       level: 9,
@@ -12,6 +16,15 @@ async function bootstrap() {
       chunkSize: 16 * 1024,
     }),
   );
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle(SwaggerConfig.title)
+    .setDescription(SwaggerConfig.description)
+    .setVersion(SwaggerConfig.version)
+    .setTermsOfService(SwaggerConfig.termsOfService)
+    .build();
+
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup('api', app, document);
   await app.listen(config().port);
 }
 bootstrap();
