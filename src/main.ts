@@ -16,7 +16,8 @@ async function bootstrap() {
       chunkSize: 16 * 1024,
     }),
   );
-  app.useGlobalPipes(new ValidationPipe(validationPipeOptions));
+  app.setGlobalPrefix('api');
+  app.useGlobalPipes(new ValidationPipe());
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle(SwaggerConfig.title)
@@ -26,7 +27,7 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('docs', app, document);
   await app.listen(config().port);
 }
 bootstrap();
